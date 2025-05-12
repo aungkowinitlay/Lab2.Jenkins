@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  flask-backend:
+    image: aungkowin/flask-backend:latest
+    ports:
+      - "5000:5000"
+    container_name: flask-backend
+  nginx-frontend:
+    image: aungkowin/nginx-frontend:latest
+    ports:
+      - "80:80"
+    container_name: nginx-frontend
