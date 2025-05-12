@@ -7,19 +7,19 @@ pipeline {
     }
     stages {
         stage('Checkout') {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 git branch: 'main', url: 'https://github.com/aungkowinitlay/Lab2.Jenkins.git'
             }
         }
         stage('Test VM2 Connection') {
-            agent { label 'vm2' }
+            agent { label 'VM2' }
             steps {
                 sh 'echo "Successfully connected to VM2"'
             }
         }
         stage('Build Backend Image') {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 sh """
                     docker build -t ${BACKEND_IMAGE} -f backend/Dockerfile.backend ./backend
@@ -27,7 +27,7 @@ pipeline {
             }
         }
         stage('Build Frontend Image') {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 sh """
                     docker build -t ${FRONTEND_IMAGE} -f frontend/Dockerfile.frontend ./frontend
@@ -35,7 +35,7 @@ pipeline {
             }
         }
         stage('Test Backend') {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 sh """
                     echo "Running backend tests..."
@@ -44,7 +44,7 @@ pipeline {
             }
         }
         stage('Login to Docker Hub') {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 sh """
                     echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
@@ -52,7 +52,7 @@ pipeline {
             }
         }
         stage('Push Images') {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 sh """
                     docker push ${BACKEND_IMAGE}
@@ -61,7 +61,7 @@ pipeline {
             }
         }
         stage('Deploy Backend') {
-            agent { label 'vm3' }
+            agent { label 'VM3' }
             steps {
                 sh """
                     docker-compose -f docker-compose.yml down || true
@@ -70,7 +70,7 @@ pipeline {
             }
         }
         stage('Deploy Frontend') {
-            agent { label 'vm2' }
+            agent { label 'VM2' }
             steps {
                 sh """
                     docker-compose -f docker-compose.yml down || true
@@ -81,7 +81,7 @@ pipeline {
     }
     post {
         always {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 sh """
                     docker logout
@@ -89,13 +89,13 @@ pipeline {
             }
         }
         success {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 echo "Pipeline completed successfully!"
             }
         }
         failure {
-            agent { label 'vm1' }
+            agent { label 'VM1' }
             steps {
                 echo "Pipeline failed!"
             }
