@@ -47,7 +47,7 @@ pipeline {
             agent { label 'VM1' }
             steps {
                 sh """
-                    echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                    echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin
                 """
             }
         }
@@ -81,22 +81,19 @@ pipeline {
     }
     post {
         always {
-            agent { label 'VM1' }
-            steps {
+            node('VM1') {
                 sh """
                     docker logout
                 """
             }
         }
         success {
-            agent { label 'VM1' }
-            steps {
+            node('VM1') {
                 echo "Pipeline completed successfully!"
             }
         }
         failure {
-            agent { label 'VM1' }
-            steps {
+            node('VM1') {
                 echo "Pipeline failed!"
             }
         }
