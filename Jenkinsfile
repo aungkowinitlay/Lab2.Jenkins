@@ -65,6 +65,7 @@ pipeline {
         stage('Deploy Backend') {
             agent { label 'VM3' }
             steps {
+                git branch: 'main', url: 'https://github.com/aungkowinitlay/Lab2.Jenkins.git'
                 sh """
                     if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
                     docker-compose -f docker-compose.yml down || true
@@ -75,6 +76,7 @@ pipeline {
         stage('Deploy Frontend') {
             agent { label 'VM2' }
             steps {
+                git branch: 'main', url: 'https://github.com/aungkowinitlay/Lab2.Jenkins.git'
                 sh """
                     if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
                     docker-compose -f docker-compose.yml down || true
