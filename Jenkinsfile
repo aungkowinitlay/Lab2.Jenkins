@@ -46,9 +46,11 @@ pipeline {
         stage('Login to Docker Hub') {
             agent { label 'VM1' }
             steps {
-                sh """
-                    echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin
-                """
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', usernameVariable: 'DOCKERHUB_USR', passwordVariable: 'DOCKERHUB_PSW')]) {
+                        sh "echo \$DOCKERHUB_PSW | docker login -u \$DOCKERHUB_USR --password-stdin"
+                    }
+                }
             }
         }
         stage('Push Images') {
@@ -64,6 +66,7 @@ pipeline {
             agent { label 'VM3' }
             steps {
                 sh """
+                    if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
                     docker-compose -f docker-compose.yml down || true
                     docker-compose -f docker-compose.yml up -d flask-backend
                 """
@@ -73,6 +76,7 @@ pipeline {
             agent { label 'VM2' }
             steps {
                 sh """
+                    if [ ! -f docker-compose.yml ]; then echo "Error: docker-compose.yml not found in workspace"; exit 1; fi
                     docker-compose -f docker-compose.yml down || true
                     docker-compose -f docker-compose.yml up -d nginx-frontend
                 """
